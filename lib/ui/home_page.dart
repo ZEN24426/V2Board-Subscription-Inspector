@@ -53,12 +53,14 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) {
       return;
     }
-    _readmeController.text = saved == null || saved.isEmpty ? defaultReadmeInput : saved;
+    _readmeController.text = saved ?? '';
     await Future.wait(<Future<void>>[
       _refreshAccountState(),
       _loadSubscriptions(),
     ]);
-    await _refreshEntries();
+    if (_readmeController.text.trim().isNotEmpty) {
+      await _refreshEntries();
+    }
   }
 
   @override

@@ -1,5 +1,3 @@
-const String defaultReadmeInput = 'https://github.com/feiniaoyun/feiniaoyun';
-
 const List<String> _githubRawMirrors = <String>[
   'gcore.jsdelivr.net',
   'fastly.jsdelivr.net',
