@@ -56,8 +56,9 @@ class WebRequest {
   final String url;
   final Map<String, String> headers;
   final String body;
+  final bool followRedirects;
 
-  const WebRequest(this.method, this.url, this.headers, this.body);
+  const WebRequest(this.method, this.url, this.headers, this.body, {this.followRedirects = false});
 }
 
 class WebResponse {
