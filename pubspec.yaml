@@ -1,6 +1,6 @@
 name: feiniao_portable
-description: 飞鸟云入口助手 - Flutter 单代码库，安卓 APK + 鸿蒙 HAP 双端。
-license: GPL-3.0-or-later
+description: 飞鸟云入口助手 - V2Board / SSPanel 订阅入口发现与获取工具（Android + HarmonyOS）。
+license: GPL-3.0-only
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
