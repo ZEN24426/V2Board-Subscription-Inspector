@@ -2,11 +2,11 @@
   "string": [
     {
       "name": "module_desc",
-      "value": "module description"
+      "value": "飞鸟云入口助手：读取订阅入口并获取 V2Board / SSPanel 订阅链接。"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "订阅入口发现与面板订阅链接获取。"
     },
     {
       "name": "EntryAbility_label",
