@@ -1,0 +1,30 @@
+{
+  app: {
+    // 签名材料（证书路径、密钥库、密码）属于本机私有信息，不提交到开源仓库。
+    // 本机构建前请在 DevEco Studio 中打开
+    //   File > Project Structure > Signing Configs
+    // 勾选 “Automatically generate signature”，由工具生成本机 signingConfigs，
+    // 或手动添加 signingConfigs 并指向仓库之外的证书文件。
+    products: [
+      {
+        name: 'default',
+        compatibleSdkVersion: '5.0.0(12)',
+        runtimeOS: 'HarmonyOS',
+      }
+    ],
+  },
+  modules: [
+    {
+      name: 'entry',
+      srcPath: './entry',
+      targets: [
+        {
+          name: 'default',
+          applyToProducts: [
+            'default'
+          ]
+        }
+      ]
+    }
+  ]
+}
