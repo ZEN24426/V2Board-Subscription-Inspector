@@ -29,7 +29,7 @@
 | Flutter OHOS SDK | `3.7.12-ohos-1.0.4` |
 | HarmonyOS SDK 配置 | `5.0.0(12)` |
 
-目前只维护 Android 与 HarmonyOS 两个目标。iOS、Windows、macOS、Linux 和 Web 尚未在本仓库配置或验证。
+目前只维护 Android 与 HarmonyOS 两个目标。OHOS 模块当前声明的设备类型为 phone；平板、折叠屏以及 iOS、Windows、macOS、Linux 和 Web 尚未在本仓库配置或验证。
 
 ## 项目结构
 
@@ -58,6 +58,8 @@ flutter pub get
 flutter test
 flutter build apk --release
 ```
+
+用于正式分发的 Release APK 必须使用你自己的签名密钥。请在 `android/key.properties` 配置 `keyAlias`、`keyPassword`、`storeFile` 和 `storePassword`，并将密钥库保存在仓库之外。该文件已被 Git 忽略。未配置正式签名时，构建不会退回使用公共调试证书，产物将保持未签名状态。
 
 ### HarmonyOS / OHOS
 
