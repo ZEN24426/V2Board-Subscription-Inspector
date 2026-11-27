@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+const int maxSecretBytes = 1024;
+
+bool isSecretWithinStorageLimit(String value) => utf8.encode(value).length <= maxSecretBytes;
+
 class AppException implements Exception {
   final String message;
   final bool fromPanel;
@@ -74,6 +80,9 @@ class MemorySecretStore implements SecretStore {
 
   @override
   Future<void> save(String id, String secret) async {
+    if (!isSecretWithinStorageLimit(secret)) {
+      throw AppException('保存内容超过系统安全存储的 1024 字节限制');
+    }
     _values[id] = secret;
   }
 
