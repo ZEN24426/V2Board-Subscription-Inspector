@@ -21,6 +21,20 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withReader('UTF-8') { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+def releaseSigningConfigured = keystorePropertiesFile.exists() &&
+    ['keyAlias', 'keyPassword', 'storeFile', 'storePassword'].every { key ->
+        def value = keystoreProperties.getProperty(key)
+        value != null && !value.trim().isEmpty()
+    } &&
+    file(keystoreProperties.getProperty('storeFile')).exists()
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
@@ -53,11 +67,23 @@ android {
         versionName flutterVersionName
     }
 
+    signingConfigs {
+        release {
+            if (releaseSigningConfigured) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            // Never sign a distributable release with the shared debug certificate.
+            if (releaseSigningConfigured) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
@@ -68,4 +94,8 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+if (!releaseSigningConfigured) {
+    logger.warn('Release signing is not configured. The release APK will be unsigned; configure android/key.properties with a private keystore before distribution.')
 }
