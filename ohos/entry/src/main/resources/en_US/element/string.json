@@ -2,15 +2,15 @@
   "string": [
     {
       "name": "module_desc",
-      "value": "module description"
+      "value": "Find subscription entry points and retrieve V2Board / SSPanel subscription URLs."
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "Subscription entry discovery and panel subscription retrieval."
     },
     {
       "name": "EntryAbility_label",
-      "value": "飞鸟云入口助手"
+      "value": "FeiNiao Subscription Assistant"
     }
   ]
 }
