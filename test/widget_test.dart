@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:feiniao_portable/core/http_client.dart';
 import 'package:feiniao_portable/core/models.dart';
 import 'package:feiniao_portable/core/url_core.dart';
 
@@ -59,6 +60,23 @@ void main() {
       store.save('too_long', 'x' * 1025),
       throwsA(isA<AppException>()),
     );
+  });
+
+  test('subscription URL validation rejects local and credentialed authorities', () {
+    expect(validateSubscriptionUrl('https://127.0.0.1/link'), false);
+    expect(validateSubscriptionUrl('https://192.168.1.10/subscription'), false);
+    expect(validateSubscriptionUrl('https://localhost/subscription'), false);
+    expect(validateSubscriptionUrl('https://user:pass@example.com/link'), false);
+  });
+
+  test('credential-bearing HTTP requests do not follow redirects by default', () {
+    final WebRequest panelRequest =
+        WebRequest('GET', 'https://panel.example.com/api/subscribe', const <String, String>{'Authorization': 'token'}, '');
+    expect(panelRequest.followRedirects, false);
+
+    final WebRequest readmeRequest =
+        WebRequest('GET', 'https://cdn.example.com/README.md', const <String, String>{}, '', followRedirects: true);
+    expect(readmeRequest.followRedirects, true);
   });
 
 }
