@@ -13,7 +13,7 @@ class AppHttpClient {
   }
 
   Future<String> getText(String url) async {
-    final WebResponse response = await send(WebRequest('GET', url, const <String, String>{}, ''));
+    final WebResponse response = await send(WebRequest('GET', url, const <String, String>{}, '', followRedirects: true));
     if (response.status != 200) {
       throw AppException('HTTP ${response.status}');
     }
@@ -38,7 +38,7 @@ class AppHttpClient {
     }
 
     request.headers.forEach(req.headers.set);
-    req.followRedirects = request.method == 'GET';
+    req.followRedirects = request.followRedirects;
     if (request.body.isNotEmpty) {
       req.add(utf8.encode(request.body));
     }
