@@ -746,6 +746,72 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<List<String>?> _confirmTrustedEntries(List<String> entries) {
+    final Set<String> selected = <String>{};
+    return showDialog<List<String>>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setDialogState) {
+            return AlertDialog(
+              title: const Text('确认可信入口'),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        '登录时，你的账号和密码会发送给勾选的站点。请先通过服务提供方的官方渠道核实域名。HTTPS 不代表站点本身可信。',
+                      ),
+                      const SizedBox(height: 12),
+                      ...entries.map((String entry) {
+                        final Uri? uri = Uri.tryParse(entry);
+                        final String host = uri?.host ?? entry;
+                        return CheckboxListTile(
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          value: selected.contains(entry),
+                          title: Text(host, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text(entry, maxLines: 2, overflow: TextOverflow.ellipsis),
+                          onChanged: (bool? checked) {
+                            setDialogState(() {
+                              if (checked == true) {
+                                selected.add(entry);
+                              } else {
+                                selected.remove(entry);
+                              }
+                            });
+                          },
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('取消'),
+                ),
+                ElevatedButton(
+                  onPressed: selected.isEmpty
+                      ? null
+                      : () => Navigator.of(dialogContext).pop(
+                            entries.where(selected.contains).toList(),
+                          ),
+                  child: const Text('信任所选入口并继续'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Future<void> _fetchSubscription() async {
     if (_fetching) {
       return;
@@ -760,13 +826,10 @@ class _HomePageState extends State<HomePage> {
     try {
       final String email = _emailController.text.trim();
       final String password = _passwordController.text;
+      final bool hasNewCredentials = email.isNotEmpty && password.isNotEmpty;
       AccountCredentials? credentials;
-      if (email.isNotEmpty && password.isNotEmpty) {
-        await _accountRepository.saveCredentials(email, password);
+      if (hasNewCredentials) {
         credentials = AccountCredentials(email: email, password: password);
-        _emailController.clear();
-        _passwordController.clear();
-        await _refreshAccountState();
       } else {
         credentials = await _accountRepository.loadCredentials();
       }
@@ -774,7 +837,21 @@ class _HomePageState extends State<HomePage> {
         _showMessage('请先填写机场账号密码', true);
         return;
       }
-      final SubscriptionFetchResult result = await fetchSubscriptionUrl(_http, _entries, credentials);
+
+      final List<String>? trustedEntries = await _confirmTrustedEntries(_entries);
+      if (!mounted || trustedEntries == null || trustedEntries.isEmpty) {
+        return;
+      }
+
+      if (hasNewCredentials) {
+        await _accountRepository.saveCredentials(email, password);
+        _emailController.clear();
+        _passwordController.clear();
+        await _refreshAccountState();
+      }
+
+      final SubscriptionFetchResult result =
+          await fetchSubscriptionUrl(_http, trustedEntries, credentials);
       await _repository.save(result.subscriptionUrl);
       await _loadSubscriptions();
       if (!mounted) {
