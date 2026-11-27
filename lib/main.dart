@@ -25,7 +25,7 @@ class FeiNiaoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '飞鸟云入口助手',
+      title: 'V2Board-Subscription-Inspector',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: false,

@@ -2,7 +2,7 @@
     package="com.feiniao.portable">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="飞鸟云入口助手"
+        android:label="V2Board-Subscription-Inspector"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
