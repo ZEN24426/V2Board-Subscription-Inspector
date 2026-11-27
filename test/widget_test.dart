@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:feiniao_portable/core/models.dart';
 import 'package:feiniao_portable/core/url_core.dart';
 
 void main() {
@@ -45,4 +46,19 @@ void main() {
   test('redactSubscriptionUrl hides secret part', () {
     expect(redactSubscriptionUrl('https://example.com/link?token=secret'), 'https://example.com?••••••');
   });
+  test('secure storage limit is measured in UTF-8 bytes', () {
+    expect(isSecretWithinStorageLimit('a' * 1024), true);
+    expect(isSecretWithinStorageLimit('a' * 1025), false);
+    expect(isSecretWithinStorageLimit('汉' * 341), true);
+    expect(isSecretWithinStorageLimit('汉' * 342), false);
+  });
+
+  test('memory secret store rejects values above the platform limit', () async {
+    final MemorySecretStore store = MemorySecretStore();
+    await expectLater(
+      store.save('too_long', 'x' * 1025),
+      throwsA(isA<AppException>()),
+    );
+  });
+
 }
