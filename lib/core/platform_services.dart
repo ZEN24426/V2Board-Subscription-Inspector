@@ -23,6 +23,9 @@ class ChannelSecretStore implements SecretStore {
 
   @override
   Future<void> save(String id, String secret) async {
+    if (!isSecretWithinStorageLimit(secret)) {
+      throw AppException('保存内容超过系统安全存储的 1024 字节限制');
+    }
     await _channel.invokeMethod<void>('storeSave', <String, String>{'id': id, 'secret': secret});
   }
 
